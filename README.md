@@ -9,10 +9,10 @@ The first security scanner that teaches you while it scans.
 
 NetSweep finds every device on your network, scans their open ports, detects services and versions, checks for known CVEs, and — if you provide an AI key — explains every single finding in plain English with four layers:
 
-- 🔍 **What is it** — plain English description
-- ⚡ **Why it matters** — security implication
-- 💀 **Real risk** — concrete worst-case scenario
-- 🛡 **How to fix it** — exact actionable steps
+-  **What is it** — plain English description
+-  **Why it matters** — security implication
+-  **Real risk** — concrete worst-case scenario
+-  **How to fix it** — exact actionable steps
 
 ---
 
