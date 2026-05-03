@@ -1,15 +1,8 @@
-"""
-NetSweep AI Layer — Multi-Provider Explanation Engine
-Supports: Anthropic (Claude), OpenAI (GPT-4o), Google (Gemini)
-Generates four-layer security explanations for every finding.
-"""
-
 import json
 import threading
 import requests
 from dataclasses import dataclass
 from typing import Optional, Callable
-
 
 # ─── Provider Config ───────────────────────────────────────────────────────────
 
@@ -24,9 +17,15 @@ PROVIDERS = {
     },
     "Google (Gemini)": {
         "key_prefix": "AIza",
-        "model": "gemini-1.5-pro",
+        "model": "gemini-2.0-flash-lite",
+    },
+    "Groq (Llama 3)": {
+    "key_prefix": "gsk_",
+    "model": "llama-3.1-8b-instant",
     },
 }
+
+PROVIDER_NAMES = list(PROVIDERS.keys())
 
 # ─── Prompt Templates ─────────────────────────────────────────────────────────
 
@@ -66,6 +65,23 @@ Respond ONLY with a JSON object (no markdown) with exactly these keys:
 
 
 # ─── API Callers ───────────────────────────────────────────────────────────────
+
+def _call_groq(api_key: str, model: str, prompt: str) -> str:
+    r = requests.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": model,
+            "max_tokens": 600,
+            "messages": [{"role": "user", "content": prompt}],
+        },
+        timeout=30,
+    )
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"]
 
 def _call_anthropic(api_key: str, model: str, prompt: str) -> str:
     r = requests.post(
@@ -125,37 +141,41 @@ class AIClient:
     def _call(self, prompt: str) -> str:
         if not self.available:
             raise RuntimeError("No API key configured")
+        cfg = PROVIDERS.get(self.provider)
+        if not cfg:
+            raise ValueError(f"Unknown provider: {self.provider}")
         if self.provider == "Anthropic (Claude)":
-            model = PROVIDERS["Anthropic (Claude)"]["model"]
-            return _call_anthropic(self.api_key, model, prompt)
+            return _call_anthropic(self.api_key, cfg["model"], prompt)
         elif self.provider == "OpenAI (GPT-4o)":
-            model = PROVIDERS["OpenAI (GPT-4o)"]["model"]
-            return _call_openai(self.api_key, model, prompt)
+            return _call_openai(self.api_key, cfg["model"], prompt)
         elif self.provider == "Google (Gemini)":
-            model = PROVIDERS["Google (Gemini)"]["model"]
-            return _call_gemini(self.api_key, model, prompt)
+            return _call_gemini(self.api_key, cfg["model"], prompt)
+        elif self.provider == "Groq (Llama 3)":
+            return _call_groq(self.api_key, cfg["model"], prompt)
         else:
             raise ValueError(f"Unknown provider: {self.provider}")
 
     def _parse_json(self, text: str) -> dict:
-        # Strip markdown fences if present
         text = text.strip()
         if text.startswith("```"):
-            text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
+            parts = text.split("```")
+            if len(parts) >= 2:
+                text = parts[1]
+                if text.startswith("json"):
+                    text = text[4:]
         try:
             return json.loads(text)
         except json.JSONDecodeError:
-            # Attempt to extract first JSON object
             import re
             match = re.search(r'\{.*\}', text, re.DOTALL)
             if match:
-                return json.loads(match.group())
+                try:
+                    return json.loads(match.group())
+                except Exception:
+                    pass
             return {}
 
     def explain_port(self, device, port_info, context: str = "") -> dict:
-        """Generate four-layer explanation for a single open port."""
         prompt = PORT_EXPLANATION_PROMPT.format(
             ip=device.ip,
             hostname=device.hostname,
@@ -165,19 +185,17 @@ class AIClient:
             version=port_info.version or "unknown",
             risk_level=port_info.risk_level,
             cves=", ".join(port_info.cve_ids) if port_info.cve_ids else "None found",
-            context=context or f"Home/office network with {1} device scanned",
+            context=context or "Home or office network",
         )
         raw = self._call(prompt)
         return self._parse_json(raw)
 
     def summarize_device(self, device) -> dict:
-        """Generate overall device security summary."""
         ports_summary = ", ".join(
             f"{p.port}/{p.service}[{p.risk_level}]"
             for p in device.open_ports
         ) or "No open ports found"
         cve_count = sum(len(p.cve_ids) for p in device.open_ports)
-
         prompt = DEVICE_SUMMARY_PROMPT.format(
             ip=device.ip,
             hostname=device.hostname,
@@ -192,21 +210,14 @@ class AIClient:
         return self._parse_json(raw)
 
     def explain_all_async(self, devices: list, on_update: Callable, context: str = ""):
-        """
-        Asynchronously generate AI explanations for all devices & ports.
-        Calls on_update(device_ip, port_or_None, explanation_dict) as results come in.
-        """
         def _worker():
             for device in devices:
-                # Device summary
                 try:
                     summary = self.summarize_device(device)
                     device.ai_summary = summary
                     on_update(device.ip, None, summary)
                 except Exception as e:
                     on_update(device.ip, None, {"error": str(e)})
-
-                # Per-port explanations
                 for port_info in device.open_ports:
                     try:
                         explanation = self.explain_port(device, port_info, context)
@@ -214,13 +225,11 @@ class AIClient:
                         on_update(device.ip, port_info.port, explanation)
                     except Exception as e:
                         on_update(device.ip, port_info.port, {"error": str(e)})
-
         t = threading.Thread(target=_worker, daemon=True)
         t.start()
         return t
 
     def test_connection(self) -> tuple:
-        """Returns (success: bool, message: str)"""
         try:
             result = self._call("Reply with the single word: connected")
             if result:
@@ -234,11 +243,11 @@ class AIClient:
         return False, "No response received"
 
 
-# ─── Fallback (no API key) ────────────────────────────────────────────────────
+# ─── Fallback Explanations ────────────────────────────────────────────────────
 
 FALLBACK_EXPLANATIONS = {
     "Telnet": {
-        "what_is_it": "Telnet is a decades-old remote access protocol that lets someone control this device over the network.",
+        "what_is_it": "Telnet is a decades-old remote access protocol that lets someone control a device over the network.",
         "why_it_matters": "All data sent over Telnet — including passwords — travels in plain text. Anyone on the same network can intercept and read it instantly.",
         "real_risk": "An attacker on your network could capture the login credentials for this device and take full control of it.",
         "how_to_fix": "Disable Telnet immediately. Enable SSH instead — it does the same job but encrypts all traffic. Find this setting in the device's admin panel under Services or Remote Access.",
@@ -246,29 +255,42 @@ FALLBACK_EXPLANATIONS = {
     },
     "SMB": {
         "what_is_it": "SMB (Server Message Block) is the Windows file and printer sharing protocol.",
-        "why_it_matters": "SMB vulnerabilities have enabled some of history's worst ransomware attacks — WannaCry and NotPetya both used SMB to spread across entire networks in minutes.",
-        "real_risk": "An unpatched SMB service can allow an attacker to take full control of this machine and use it to spread ransomware to every other device on your network.",
-        "how_to_fix": "Ensure Windows is fully patched. Disable SMBv1 (legacy version) in Windows Features. Block port 445 at your firewall from external access.",
+        "why_it_matters": "SMB vulnerabilities have enabled some of history's worst ransomware attacks — WannaCry and NotPetya both used SMB to spread across networks in minutes.",
+        "real_risk": "An unpatched SMB service can allow an attacker to take full control of this machine and use it to spread ransomware to every device on your network.",
+        "how_to_fix": "Ensure Windows is fully patched. Disable SMBv1 in Windows Features. Block port 445 at your firewall from external access. Run 'sc stop lanmanserver' if not needed.",
         "severity_reason": "CRITICAL due to history of catastrophic exploits targeting this exact service.",
     },
     "RDP": {
         "what_is_it": "RDP (Remote Desktop Protocol) gives full graphical control of a Windows machine over the network.",
         "why_it_matters": "RDP exposed to the internet is one of the most common entry points for ransomware gangs. Attackers scan for it constantly.",
         "real_risk": "A brute-forced or stolen RDP password gives an attacker a full desktop session — they can install ransomware, steal data, or use your machine as a pivot point.",
-        "how_to_fix": "Never expose RDP directly to the internet. Use a VPN or RDP gateway. Enable Network Level Authentication (NLA). Use a non-standard port if internal use only. Enable account lockout after failed attempts.",
+        "how_to_fix": "Never expose RDP directly to the internet. Use a VPN or RDP gateway. Enable Network Level Authentication (NLA). Enable account lockout after failed attempts.",
         "severity_reason": "CRITICAL because of constant automated scanning and active exploitation in the wild.",
     },
     "VNC": {
         "what_is_it": "VNC (Virtual Network Computing) provides remote graphical desktop access, similar to RDP but cross-platform.",
         "why_it_matters": "Many VNC installations are deployed without passwords or with weak ones, giving anyone who finds it full control of the desktop.",
-        "real_risk": "An attacker could take full control of this machine — viewing the screen, moving the mouse, typing commands — without ever needing a password if VNC is misconfigured.",
-        "how_to_fix": "Set a strong VNC password immediately. Restrict VNC access by IP address. Consider replacing with a VPN + SSH tunnel setup instead. Never expose VNC to the internet.",
+        "real_risk": "An attacker could take full control of this machine — viewing the screen, moving the mouse, typing commands — without ever needing a password.",
+        "how_to_fix": "Set a strong VNC password immediately. Restrict VNC access by IP address. Consider replacing with a VPN + SSH tunnel. Never expose VNC to the internet.",
         "severity_reason": "CRITICAL because authentication is frequently absent or weak on VNC installations.",
+    },
+    "FTP": {
+        "what_is_it": "FTP (File Transfer Protocol) is used to transfer files between computers over a network.",
+        "why_it_matters": "Like Telnet, FTP sends usernames and passwords in plain text — anyone sniffing network traffic can capture credentials instantly.",
+        "real_risk": "Attackers can intercept FTP credentials and gain access to all files on the server, or use anonymous FTP to exfiltrate data without any credentials.",
+        "how_to_fix": "Replace FTP with SFTP (SSH File Transfer Protocol) or FTPS (FTP over TLS). Disable anonymous FTP login. Restrict access by IP address in your FTP server config.",
+        "severity_reason": "HIGH because credentials and data are transmitted unencrypted.",
+    },
+    "Redis": {
+        "what_is_it": "Redis is an in-memory data store used for caching, session management, and real-time data.",
+        "why_it_matters": "Redis was designed to run inside trusted networks — it has no authentication by default, so any connection is treated as trusted.",
+        "real_risk": "An attacker can read all cached data (including session tokens), write arbitrary data, or use Redis's config commands to write files to the server and achieve code execution.",
+        "how_to_fix": "Add a strong password via 'requirepass' in redis.conf. Bind Redis to 127.0.0.1 only. Never expose port 6379 to the internet. Upgrade to Redis 7+ which has ACL support.",
+        "severity_reason": "CRITICAL because unauthenticated Redis instances lead directly to data breach and remote code execution.",
     },
 }
 
 def get_fallback_explanation(service: str) -> dict:
-    """Return hardcoded explanation for known dangerous services when no AI key."""
     for key, val in FALLBACK_EXPLANATIONS.items():
         if key.lower() in service.lower():
             return val
@@ -281,7 +303,6 @@ def get_fallback_explanation(service: str) -> dict:
     }
 
 
-# ─── Quick test ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import os
     key = os.getenv("ANTHROPIC_API_KEY", "")
