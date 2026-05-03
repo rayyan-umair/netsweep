@@ -1,8 +1,3 @@
-"""
-NetSweep Engine — Network Discovery & Security Assessment
-Core scanning logic: host discovery, port scanning, service detection, risk scoring
-"""
-
 import subprocess
 import socket
 import json
