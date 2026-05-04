@@ -1,3 +1,23 @@
+"""
+NetSweep - Network Discovery & Security Assessment
+gui.py - Main Application
+
+Author  : Rayyan Umair
+Date    : 04 May, 2026
+Purpose : GUI layer for NetSweep. Handles all visual components, scan control,
+          demo mode, AI integration, and result rendering.
+Contact : rayyanxumair@gmail.com
+GitHub  : github.com/rayyan-umair
+
+"Technology evolves quickly. Responsibility does not."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  This file is part of NetSweep, a network security scanner built for learners.
+  Written and maintained by Rayyan Umair. All logic, structure, and design
+  decisions in this file reflect the author's original work.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 import threading

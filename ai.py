@@ -1,3 +1,24 @@
+"""
+NetSweep - Network Discovery & Security Assessment
+ai.py - AI Explanation Layer
+
+Author  : Rayyan Umair
+Date    : 04 May, 2026
+Purpose : Handles all AI provider integrations (Anthropic, OpenAI, Google, Groq).
+          Generates four-layer security explanations for every scan finding.
+          Also provides hardcoded fallback explanations when no API key is set.
+Contact : rayyanxumair@gmail.com
+GitHub  : github.com/rayyan-umair
+
+"Technology evolves quickly. Responsibility does not."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  This file is part of NetSweep, a network security scanner built for learners.
+  Written and maintained by Rayyan Umair. All logic, structure, and design
+  decisions in this file reflect the author's original work.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+
 import json
 import threading
 import requests

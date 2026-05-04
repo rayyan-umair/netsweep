@@ -1,3 +1,24 @@
+"""
+NetSweep - Network Discovery & Security Assessment
+engine.py - Scanning Engine
+
+Author  : Rayyan Umair
+Date    : 04 May, 2026
+Purpose : Core scanning logic. Handles host discovery, port scanning, banner
+          grabbing, service detection, CVE lookup, risk scoring, and device
+          profiling. Designed to be imported and driven by gui.py.
+Contact : rayyanxumair@gmail.com
+GitHub  : github.com/rayyan-umair
+
+"Technology evolves quickly. Responsibility does not."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  This file is part of NetSweep, a network security scanner built for learners.
+  Written and maintained by Rayyan Umair. All logic, structure, and design
+  decisions in this file reflect the author's original work.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+
 import subprocess
 import socket
 import json
