@@ -65,31 +65,31 @@ class DeviceInfo:
 
 # Ports that carry inherent risk weight
 PORT_RISK = {
-    21:   ("FTP",            "HIGH",     "Unencrypted file transfer — credentials sent in plaintext"),
-    22:   ("SSH",            "LOW",      "Encrypted remote access — generally safe, watch for old versions"),
-    23:   ("Telnet",         "CRITICAL", "Unencrypted remote access — credentials fully exposed"),
-    25:   ("SMTP",           "MEDIUM",   "Mail server — check for open relay"),
-    53:   ("DNS",            "MEDIUM",   "DNS service — check for zone transfer"),
-    80:   ("HTTP",           "MEDIUM",   "Unencrypted web server — data visible in transit"),
+    21:   ("FTP",            "HIGH",     "Unencrypted file transfer - credentials sent in plaintext"),
+    22:   ("SSH",            "LOW",      "Encrypted remote access - generally safe, watch for old versions"),
+    23:   ("Telnet",         "CRITICAL", "Unencrypted remote access - credentials fully exposed"),
+    25:   ("SMTP",           "MEDIUM",   "Mail server - check for open relay"),
+    53:   ("DNS",            "MEDIUM",   "DNS service - check for zone transfer"),
+    80:   ("HTTP",           "MEDIUM",   "Unencrypted web server - data visible in transit"),
     110:  ("POP3",           "HIGH",     "Unencrypted email retrieval"),
-    135:  ("RPC",            "HIGH",     "Windows RPC — common attack surface"),
-    139:  ("NetBIOS",        "HIGH",     "Windows file sharing — legacy, frequently exploited"),
-    143:  ("IMAP",           "HIGH",     "Unencrypted email — credentials exposed"),
-    443:  ("HTTPS",          "LOW",      "Encrypted web server — generally safe"),
-    445:  ("SMB",            "CRITICAL", "Windows file sharing — EternalBlue, ransomware vector"),
-    1433: ("MSSQL",          "HIGH",     "Microsoft SQL Server — database exposure"),
-    1521: ("Oracle DB",      "HIGH",     "Oracle database — sensitive data exposure"),
-    3306: ("MySQL",          "HIGH",     "MySQL database — check for public exposure"),
-    3389: ("RDP",            "CRITICAL", "Remote Desktop — brute force & BlueKeep target"),
-    4444: ("Metasploit",     "CRITICAL", "Known exploit framework port — active compromise likely"),
+    135:  ("RPC",            "HIGH",     "Windows RPC - common attack surface"),
+    139:  ("NetBIOS",        "HIGH",     "Windows file sharing - legacy, frequently exploited"),
+    143:  ("IMAP",           "HIGH",     "Unencrypted email - credentials exposed"),
+    443:  ("HTTPS",          "LOW",      "Encrypted web server - generally safe"),
+    445:  ("SMB",            "CRITICAL", "Windows file sharing - EternalBlue, ransomware vector"),
+    1433: ("MSSQL",          "HIGH",     "Microsoft SQL Server - database exposure"),
+    1521: ("Oracle DB",      "HIGH",     "Oracle database - sensitive data exposure"),
+    3306: ("MySQL",          "HIGH",     "MySQL database - check for public exposure"),
+    3389: ("RDP",            "CRITICAL", "Remote Desktop - brute force & BlueKeep target"),
+    4444: ("Metasploit",     "CRITICAL", "Known exploit framework port - active compromise likely"),
     5432: ("PostgreSQL",     "HIGH",     "PostgreSQL database"),
-    5900: ("VNC",            "CRITICAL", "Remote desktop — often password-less, full access"),
-    6379: ("Redis",          "CRITICAL", "Redis cache — often unauthenticated, data exposure"),
-    7547: ("TR-069",         "CRITICAL", "Router management — Mirai botnet target"),
+    5900: ("VNC",            "CRITICAL", "Remote desktop - often password-less, full access"),
+    6379: ("Redis",          "CRITICAL", "Redis cache - often unauthenticated, data exposure"),
+    7547: ("TR-069",         "CRITICAL", "Router management - Mirai botnet target"),
     8080: ("HTTP-Alt",       "MEDIUM",   "Alternate web server or proxy"),
     8443: ("HTTPS-Alt",      "LOW",      "Alternate HTTPS"),
-    9200: ("Elasticsearch",  "CRITICAL", "Search engine — often unauthenticated, data breach risk"),
-    27017:("MongoDB",        "CRITICAL", "Database — frequently exposed without authentication"),
+    9200: ("Elasticsearch",  "CRITICAL", "Search engine - often unauthenticated, data breach risk"),
+    27017:("MongoDB",        "CRITICAL", "Database - frequently exposed without authentication"),
 }
 
 RISK_WEIGHTS = {"CRITICAL": 40, "HIGH": 20, "MEDIUM": 10, "LOW": 3, "INFO": 0}
@@ -134,12 +134,12 @@ def arp_scan(network: str) -> dict:
             if len(parts) >= 2 and is_ip(parts[0]):
                 hosts[parts[0]] = parts[1]
     except FileNotFoundError:
-        # arp-scan not available — use ARP cache + ping sweep
+        # arp-scan not available - use ARP cache + ping sweep
         hosts = ping_sweep(network)
     return hosts
 
 def ping_sweep(network: str) -> dict:
-    """Ping sweep fallback — returns {ip: 'Unknown'} for alive hosts."""
+    """Ping sweep fallback - returns {ip: 'Unknown'} for alive hosts."""
     hosts = {}
     try:
         net = ipaddress.ip_network(network, strict=False)
@@ -391,6 +391,6 @@ if __name__ == "__main__":
 
     devices = scan_network(target, progress_cb=prog)
     for d in devices:
-        print(f"\n{d.ip} ({d.hostname}) — Risk: {d.risk_label} ({d.risk_score})")
+        print(f"\n{d.ip} ({d.hostname}) - Risk: {d.risk_label} ({d.risk_score})")
         for p in d.open_ports:
             print(f"  :{p.port} {p.service} [{p.risk_level}]")

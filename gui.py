@@ -109,7 +109,7 @@ DEMO_DEVICES = [
         "risk_score": 72,
         "risk_label": "HIGH",
         "ai_summary": {
-            "headline": "Your router has two dangerous ports open — Telnet must be disabled immediately.",
+            "headline": "Your router has two dangerous ports open - Telnet must be disabled immediately.",
             "summary": "This is your network gateway, meaning all traffic flows through it. It's running Telnet (a protocol with zero encryption) alongside the admin web panel. Anyone on your network could intercept credentials or attempt to take control.",
             "top_priority": "Disable Telnet (port 23) in your router's admin panel right now.",
             "overall_verdict": "CONCERNING",
@@ -119,8 +119,8 @@ DEMO_DEVICES = [
                 "port": 23, "service": "Telnet", "version": "BusyBox v1.26.2",
                 "risk_level": "CRITICAL", "cve_ids": ["CVE-2019-9081", "CVE-2018-5767"],
                 "ai_explanation": {
-                    "what_is_it": "Telnet is a remote control protocol from the 1970s. It lets someone log into this router and issue commands — like having a keyboard plugged directly into it over the network.",
-                    "why_it_matters": "Telnet sends everything — including your router's admin password — in plain text. If anyone on your network runs a free tool called Wireshark, they can read every character you type.",
+                    "what_is_it": "Telnet is a remote control protocol from the 1970s. It lets someone log into this router and issue commands - like having a keyboard plugged directly into it over the network.",
+                    "why_it_matters": "Telnet sends everything - including your router's admin password - in plain text. If anyone on your network runs a free tool called Wireshark, they can read every character you type.",
                     "real_risk": "An attacker on your WiFi (like a neighbor or someone at a coffee shop on the same network) can capture your router admin password and reconfigure your entire network, redirect all your traffic, or install malware on every connected device.",
                     "how_to_fix": "Log into your router admin panel (usually at 192.168.1.1 in your browser). Go to Administration → Remote Management or Services. Find 'Telnet' and switch it OFF. Save and reboot. Use SSH instead if you need remote access.",
                     "severity_reason": "CRITICAL because the admin password for your entire network travels unencrypted through the air.",
@@ -130,7 +130,7 @@ DEMO_DEVICES = [
                 "port": 80, "service": "HTTP", "version": "lighttpd 1.4.53",
                 "risk_level": "MEDIUM", "cve_ids": [],
                 "ai_explanation": {
-                    "what_is_it": "Port 80 is the standard web port — this is how your router serves its admin web interface when you type 192.168.1.1 in your browser.",
+                    "what_is_it": "Port 80 is the standard web port - this is how your router serves its admin web interface when you type 192.168.1.1 in your browser.",
                     "why_it_matters": "HTTP (without the S) means data between your browser and the router isn't encrypted. Your admin session could be intercepted by someone on the same network.",
                     "real_risk": "Session hijacking: an attacker captures your session cookie and takes over your logged-in admin session without needing your password.",
                     "how_to_fix": "Enable HTTPS for the admin panel in your router settings. Most modern routers support this under Administration → Access. After enabling, always use https://192.168.1.1 to log in.",
@@ -143,9 +143,9 @@ DEMO_DEVICES = [
                 "ai_explanation": {
                     "what_is_it": "Port 443 is the encrypted web port (HTTPS). Your router uses this to serve a secure version of its admin panel.",
                     "why_it_matters": "Unlike port 80, traffic on port 443 is encrypted, so intercepting it yields only gibberish. This is the correct way to access your router's admin interface.",
-                    "real_risk": "Low risk in isolation — the main concern would be an outdated TLS version or weak cipher suite, but this requires specific tools to exploit.",
+                    "real_risk": "Low risk in isolation - the main concern would be an outdated TLS version or weak cipher suite, but this requires specific tools to exploit.",
                     "how_to_fix": "Ensure you're using HTTPS for all router admin access. Consider disabling the plain HTTP admin panel (port 80) so all access is forced through HTTPS.",
-                    "severity_reason": "LOW because encrypted access is expected and correct — just ensure the HTTP version is disabled.",
+                    "severity_reason": "LOW because encrypted access is expected and correct - just ensure the HTTP version is disabled.",
                 }
             },
         ]
@@ -159,9 +159,9 @@ DEMO_DEVICES = [
         "risk_score": 85,
         "risk_label": "CRITICAL",
         "ai_summary": {
-            "headline": "This Windows PC has SMB exposed — it's vulnerable to the same attack that spread WannaCry ransomware.",
-            "summary": "This workstation has three ports open that are commonly targeted in ransomware campaigns. The combination of SMB, RDP, and NetBIOS on one machine is a red flag — attackers actively scan for exactly this profile.",
-            "top_priority": "Patch Windows immediately and disable SMBv1 — run 'Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol' in PowerShell as Administrator.",
+            "headline": "This Windows PC has SMB exposed - it's vulnerable to the same attack that spread WannaCry ransomware.",
+            "summary": "This workstation has three ports open that are commonly targeted in ransomware campaigns. The combination of SMB, RDP, and NetBIOS on one machine is a red flag - attackers actively scan for exactly this profile.",
+            "top_priority": "Patch Windows immediately and disable SMBv1 - run 'Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol' in PowerShell as Administrator.",
             "overall_verdict": "DANGEROUS",
         },
         "open_ports": [
@@ -169,9 +169,9 @@ DEMO_DEVICES = [
                 "port": 445, "service": "SMB", "version": "Windows SMBv1",
                 "risk_level": "CRITICAL", "cve_ids": ["CVE-2017-0144", "CVE-2017-0145", "CVE-2020-0796"],
                 "ai_explanation": {
-                    "what_is_it": "SMB (Server Message Block) is Windows' file sharing protocol — it's how Windows PCs share files and printers. Port 445 is the modern SMB port.",
+                    "what_is_it": "SMB (Server Message Block) is Windows' file sharing protocol - it's how Windows PCs share files and printers. Port 445 is the modern SMB port.",
                     "why_it_matters": "SMBv1 is the exact vulnerability exploited by WannaCry in 2017, which infected 230,000 computers in 150 countries in a single day. Microsoft patched it, but only if Windows Update has been run.",
-                    "real_risk": "A device on the same network running EternalBlue (a freely available exploit) can take complete control of this machine within seconds — no password required. From there, ransomware can spread to every other device on the network automatically.",
+                    "real_risk": "A device on the same network running EternalBlue (a freely available exploit) can take complete control of this machine within seconds - no password required. From there, ransomware can spread to every other device on the network automatically.",
                     "how_to_fix": "1) Open PowerShell as Administrator. 2) Run: Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol. 3) Run Windows Update and install all patches. 4) Reboot. 5) If you don't share files, also disable SMBv2: Set-SmbServerConfiguration -EnableSMB2Protocol $false.",
                     "severity_reason": "CRITICAL because this is the exact exploit used in the largest ransomware attack in history, and it requires zero user interaction.",
                 }
@@ -180,10 +180,10 @@ DEMO_DEVICES = [
                 "port": 3389, "service": "RDP", "version": "Microsoft Terminal Services",
                 "risk_level": "CRITICAL", "cve_ids": ["CVE-2019-0708", "CVE-2021-34535"],
                 "ai_explanation": {
-                    "what_is_it": "RDP (Remote Desktop Protocol) lets you control this Windows computer from another machine — you see the full desktop remotely, as if you were sitting in front of it.",
+                    "what_is_it": "RDP (Remote Desktop Protocol) lets you control this Windows computer from another machine - you see the full desktop remotely, as if you were sitting in front of it.",
                     "why_it_matters": "RDP is one of the top three ways ransomware gangs break into company networks. Automated scanners hit port 3389 millions of times per day across the internet.",
-                    "real_risk": "BlueKeep (CVE-2019-0708) allows remote code execution with no authentication. Even a patched RDP can be brute-forced — attackers use wordlists of common passwords and can try thousands per minute.",
-                    "how_to_fix": "If RDP is not needed, disable it: System → Remote Desktop → Off. If needed: 1) Enable Network Level Authentication (NLA). 2) Set account lockout after 5 failed attempts (Local Security Policy). 3) Use a VPN — never expose RDP directly to the internet. 4) Change the port from 3389 to a non-standard port.",
+                    "real_risk": "BlueKeep (CVE-2019-0708) allows remote code execution with no authentication. Even a patched RDP can be brute-forced - attackers use wordlists of common passwords and can try thousands per minute.",
+                    "how_to_fix": "If RDP is not needed, disable it: System → Remote Desktop → Off. If needed: 1) Enable Network Level Authentication (NLA). 2) Set account lockout after 5 failed attempts (Local Security Policy). 3) Use a VPN - never expose RDP directly to the internet. 4) Change the port from 3389 to a non-standard port.",
                     "severity_reason": "CRITICAL because BlueKeep allows unauthenticated remote takeover, and brute-force tools are freely available.",
                 }
             },
@@ -191,9 +191,9 @@ DEMO_DEVICES = [
                 "port": 139, "service": "NetBIOS", "version": "",
                 "risk_level": "HIGH", "cve_ids": ["CVE-2008-4250"],
                 "ai_explanation": {
-                    "what_is_it": "NetBIOS is a legacy Windows networking protocol from the 1980s. Port 139 provides file and printer sharing through the older NetBIOS interface — it's essentially the ancestor of SMB.",
-                    "why_it_matters": "NetBIOS leaks information about the computer (its name, domain, user) to anyone who asks — no credentials required. It's also exploitable in combination with other attacks.",
-                    "real_risk": "Attackers use NetBIOS to map your network silently — learning what machines exist, what they're named, and what users are logged in. This recon information is used to plan targeted attacks.",
+                    "what_is_it": "NetBIOS is a legacy Windows networking protocol from the 1980s. Port 139 provides file and printer sharing through the older NetBIOS interface - it's essentially the ancestor of SMB.",
+                    "why_it_matters": "NetBIOS leaks information about the computer (its name, domain, user) to anyone who asks - no credentials required. It's also exploitable in combination with other attacks.",
+                    "real_risk": "Attackers use NetBIOS to map your network silently - learning what machines exist, what they're named, and what users are logged in. This recon information is used to plan targeted attacks.",
                     "how_to_fix": "Disable NetBIOS over TCP/IP: Network Connections → Adapter Properties → IPv4 Properties → Advanced → WINS tab → 'Disable NetBIOS over TCP/IP'. If file sharing isn't needed, also disable the 'File and Printer Sharing' feature entirely.",
                     "severity_reason": "HIGH because it leaks network intelligence and has a long history of direct exploits on unpatched systems.",
                 }
@@ -209,7 +209,7 @@ DEMO_DEVICES = [
         "risk_score": 28,
         "risk_label": "MEDIUM",
         "ai_summary": {
-            "headline": "Raspberry Pi with SSH open — safe if the default password has been changed.",
+            "headline": "Raspberry Pi with SSH open - safe if the default password has been changed.",
             "summary": "This Pi has SSH enabled, which is normal and expected. The risk is entirely dependent on whether the default 'raspberry' password has been changed. Many Pi owners never change it.",
             "top_priority": "Run 'passwd' on the Pi right now and set a strong, unique password if you haven't already.",
             "overall_verdict": "MONITOR",
@@ -219,18 +219,18 @@ DEMO_DEVICES = [
                 "port": 22, "service": "SSH", "version": "OpenSSH 8.9p1",
                 "risk_level": "LOW", "cve_ids": [],
                 "ai_explanation": {
-                    "what_is_it": "SSH (Secure Shell) is an encrypted remote access protocol — it lets you control this Raspberry Pi from a terminal window on another computer. It's the secure, modern replacement for Telnet.",
-                    "why_it_matters": "SSH itself is secure. The risk is entirely in the password (or key) used to authenticate. Raspberry Pi devices ship with the username 'pi' and password 'raspberry' — and millions of Pi owners never change this.",
+                    "what_is_it": "SSH (Secure Shell) is an encrypted remote access protocol - it lets you control this Raspberry Pi from a terminal window on another computer. It's the secure, modern replacement for Telnet.",
+                    "why_it_matters": "SSH itself is secure. The risk is entirely in the password (or key) used to authenticate. Raspberry Pi devices ship with the username 'pi' and password 'raspberry' - and millions of Pi owners never change this.",
                     "real_risk": "If the default credentials haven't been changed, any device on your network can log into this Pi instantly with 'ssh pi@192.168.1.77' and the default password. From there, an attacker controls a Linux machine on your network.",
-                    "how_to_fix": "1) SSH in: ssh pi@192.168.1.77. 2) Run: passwd — set a strong password (12+ characters, mix of letters, numbers, symbols). 3) Better yet, switch to SSH key authentication and disable password login: edit /etc/ssh/sshd_config, set 'PasswordAuthentication no'. 4) Consider changing the default 'pi' username.",
-                    "severity_reason": "LOW because SSH is encrypted — but the default password situation makes this a MEDIUM risk until confirmed changed.",
+                    "how_to_fix": "1) SSH in: ssh pi@192.168.1.77. 2) Run: passwd - set a strong password (12+ characters, mix of letters, numbers, symbols). 3) Better yet, switch to SSH key authentication and disable password login: edit /etc/ssh/sshd_config, set 'PasswordAuthentication no'. 4) Consider changing the default 'pi' username.",
+                    "severity_reason": "LOW because SSH is encrypted - but the default password situation makes this a MEDIUM risk until confirmed changed.",
                 }
             },
             {
                 "port": 80, "service": "HTTP", "version": "nginx 1.18.0",
                 "risk_level": "MEDIUM", "cve_ids": [],
                 "ai_explanation": {
-                    "what_is_it": "This Pi is running a web server on port 80 — likely Pi-hole (a network ad blocker), Home Assistant, or a personal project.",
+                    "what_is_it": "This Pi is running a web server on port 80 - likely Pi-hole (a network ad blocker), Home Assistant, or a personal project.",
                     "why_it_matters": "If this web app has no login or a weak one, anyone on the network can access it. Depending on what it controls (smart home devices, DNS settings), this could have wide impact.",
                     "real_risk": "If it's Pi-hole: an attacker could modify your DNS settings to redirect traffic. If it's Home Assistant: full control of smart home devices. If it's a personal project: depends on what data it exposes.",
                     "how_to_fix": "Enable authentication on whatever app is running here. Keep the software updated (sudo apt update && sudo apt upgrade). If this service isn't intentional, find what's running with: sudo systemctl list-units --type=service.",
@@ -248,8 +248,8 @@ DEMO_DEVICES = [
         "risk_score": 45,
         "risk_label": "MEDIUM",
         "ai_summary": {
-            "headline": "Unknown Espressif IoT device with an open admin panel — identify this before trusting it.",
-            "summary": "Espressif makes the ESP8266/ESP32 chips used in millions of cheap smart home devices — bulbs, plugs, sensors. This device has a web admin panel open with no hostname, which means it may be using default credentials.",
+            "headline": "Unknown Espressif IoT device with an open admin panel - identify this before trusting it.",
+            "summary": "Espressif makes the ESP8266/ESP32 chips used in millions of cheap smart home devices - bulbs, plugs, sensors. This device has a web admin panel open with no hostname, which means it may be using default credentials.",
             "top_priority": "Identify what this device is, log into its web panel, and change the default password.",
             "overall_verdict": "MONITOR",
         },
@@ -258,10 +258,10 @@ DEMO_DEVICES = [
                 "port": 80, "service": "HTTP", "version": "ESP-IDF httpd",
                 "risk_level": "MEDIUM", "cve_ids": [],
                 "ai_explanation": {
-                    "what_is_it": "This is a web admin interface built into an IoT device — likely a smart plug, smart bulb, or DIY sensor running on an Espressif ESP chip.",
+                    "what_is_it": "This is a web admin interface built into an IoT device - likely a smart plug, smart bulb, or DIY sensor running on an Espressif ESP chip.",
                     "why_it_matters": "IoT devices are infamous for shipping with default passwords like 'admin/admin' that users never change. They're often poorly maintained with no security updates.",
                     "real_risk": "Mirai botnet (which knocked major websites offline in 2016) spread by scanning for exactly this type of device with default credentials. A compromised IoT device can be used to attack other devices or flood networks with traffic.",
-                    "how_to_fix": "1) Open 192.168.1.112 in your browser and log in. 2) Change the default password immediately. 3) Check if the device has firmware updates — apply them. 4) Consider putting all IoT devices on a separate WiFi network (VLAN or guest network) so they can't reach your main devices.",
+                    "how_to_fix": "1) Open 192.168.1.112 in your browser and log in. 2) Change the default password immediately. 3) Check if the device has firmware updates - apply them. 4) Consider putting all IoT devices on a separate WiFi network (VLAN or guest network) so they can't reach your main devices.",
                     "severity_reason": "MEDIUM because IoT devices with default credentials are trivially compromised and frequently targeted by automated botnets.",
                 }
             },
@@ -276,9 +276,9 @@ DEMO_DEVICES = [
         "risk_score": 0,
         "risk_label": "CLEAN",
         "ai_summary": {
-            "headline": "iPhone with no open ports — this device looks secure.",
+            "headline": "iPhone with no open ports - this device looks secure.",
             "summary": "Apple devices are designed with security in mind. No open ports means no exposed services. This is the expected profile for a well-maintained iPhone.",
-            "top_priority": "Keep iOS updated — Apple regularly patches security vulnerabilities.",
+            "top_priority": "Keep iOS updated - Apple regularly patches security vulnerabilities.",
             "overall_verdict": "SAFE",
         },
         "open_ports": []
@@ -349,7 +349,7 @@ class APISetupDialog(tk.Toplevel):
         super().__init__(parent)
         self.on_complete = on_complete
 
-        self.title(f"{APP_NAME} — AI Setup")
+        self.title(f"{APP_NAME} - AI Setup")
         self.configure(bg=BG)
         self.resizable(False, False)
         self.grab_set()
@@ -637,7 +637,7 @@ class DeviceCard(tk.Frame):
             for port_info in d.open_ports:
                 self._add_port_row(port_info)
         else:
-            tk.Label(self._body, text="✅  No open ports detected — this device looks clean",
+            tk.Label(self._body, text="✅  No open ports detected - this device looks clean",
                      font=("Helvetica", 9), fg=GREEN, bg=BG2).pack(anchor="w", pady=4)
 
         # Bottom separator
@@ -782,7 +782,7 @@ class DeviceCard(tk.Frame):
 class NetRaptorApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title(f"{APP_NAME} — Network Security Scanner  //  {APP_AUTHOR}")
+        self.title(f"{APP_NAME} - Network Security Scanner  //  {APP_AUTHOR}")
         self.configure(bg=BG)
 
         cfg = load_config()
@@ -896,7 +896,7 @@ class NetRaptorApp(tk.Tk):
                               relief="flat", padx=12, pady=5, cursor="hand2",
                               command=self._run_demo)
         demo_btn.pack(side="left", padx=(0, 12))
-        Tooltip(demo_btn, "Load example results — no network needed. Great for learning!")
+        Tooltip(demo_btn, "Load example results - no network needed. Great for learning!")
 
         tk.Frame(bar, bg=BORDER, width=1).pack(side="left", fill="y", pady=2, padx=4)
 
@@ -1039,12 +1039,12 @@ class NetRaptorApp(tk.Tk):
                  fg=TEXT_DIM, bg=BG2).pack(side="left")
 
         glossary = [
-            ("Port",    "A numbered door on a device — services listen here"),
+            ("Port",    "A numbered door on a device - services listen here"),
             ("CVE",     "A known, named vulnerability with a public ID"),
-            ("SSH",     "Secure remote terminal access — encrypted"),
-            ("SMB",     "Windows file sharing — dangerous if unpatched"),
-            ("RDP",     "Remote desktop for Windows — high attack target"),
-            ("Telnet",  "Old remote access — sends passwords in plain text"),
+            ("SSH",     "Secure remote terminal access - encrypted"),
+            ("SMB",     "Windows file sharing - dangerous if unpatched"),
+            ("RDP",     "Remote desktop for Windows - high attack target"),
+            ("Telnet",  "Old remote access - sends passwords in plain text"),
             ("ARP",     "Protocol that maps IPs to physical MAC addresses"),
             ("Banner",  "Service version info sent when you connect"),
         ]
@@ -1093,7 +1093,7 @@ class NetRaptorApp(tk.Tk):
 
     def _run_demo(self):
         self._clear()
-        self._log(f"◈ {APP_NAME} — Demo Mode\n", "accent")
+        self._log(f"◈ {APP_NAME} - Demo Mode\n", "accent")
         self._log(f"Built by {APP_AUTHOR}\n", "purple")
         self._log("─" * 38 + "\n", "info")
         self._log("Loading example network results...\n", "info")
@@ -1103,8 +1103,8 @@ class NetRaptorApp(tk.Tk):
         devices = make_demo_device_objects()
         self._scan_devices = devices
         self.results_header.config(
-            text=f"Demo Network — {len(devices)} devices  //  Click '▸ Learn more' on any port to understand it")
-        self._status("Demo mode — exploring example results")
+            text=f"Demo Network - {len(devices)} devices  //  Click '▸ Learn more' on any port to understand it")
+        self._status("Demo mode - exploring example results")
 
         def load_with_delay():
             for i, d in enumerate(devices):
@@ -1118,7 +1118,7 @@ class NetRaptorApp(tk.Tk):
                            f"{len(d.open_ports)} port(s)\n\n", tag)
 
             self.after(len(devices) * 260, lambda: self._log(
-                "✓ Demo loaded — click 'Learn more' on\n"
+                "✓ Demo loaded - click 'Learn more' on\n"
                 "  any port to see what it means.\n", "teal"))
             self.after(len(devices) * 260, lambda: self.progress_var.set(100))
 
@@ -1139,7 +1139,7 @@ class NetRaptorApp(tk.Tk):
             return
         target = self.target_var.get().strip()
         if not target:
-            messagebox.showwarning(APP_NAME, "Enter a network range — e.g. 192.168.1.0/24")
+            messagebox.showwarning(APP_NAME, "Enter a network range - e.g. 192.168.1.0/24")
             return
         self._clear()
         self._scanning = True
@@ -1148,7 +1148,7 @@ class NetRaptorApp(tk.Tk):
         self.stop_btn.config(state="normal")
         self.progress_var.set(0)
         self.results_header.config(text="Scanning...")
-        self._log(f"◈ {APP_NAME} — Live Scan\n", "accent")
+        self._log(f"◈ {APP_NAME} - Live Scan\n", "accent")
         self._log(f"Built by {APP_AUTHOR}\n", "purple")
         self._log("─" * 38 + "\n", "info")
         self._log(f"Target: {target}\n\n", "info")
@@ -1188,15 +1188,15 @@ class NetRaptorApp(tk.Tk):
         count = len(devices)
         crit  = sum(1 for d in devices if d.risk_label in ("CRITICAL", "HIGH", "DANGEROUS"))
         self.results_header.config(
-            text=f"Scan complete — {count} device(s), {crit} high-risk  //  Click '▸ Learn more' on any port")
-        self._log(f"✓ Done — {count} device(s) found, {crit} high-risk\n\n", "good")
+            text=f"Scan complete - {count} device(s), {crit} high-risk  //  Click '▸ Learn more' on any port")
+        self._log(f"✓ Done - {count} device(s) found, {crit} high-risk\n\n", "good")
         for d in devices:
             self._add_card(d)
             tag = "critical" if d.risk_label in ("CRITICAL", "HIGH", "DANGEROUS") else \
                   "warn" if d.risk_label in ("MEDIUM",) else "good"
             self._log(f"  {d.ip}  {d.hostname}\n"
                       f"  └─ {d.risk_label}  {len(d.open_ports)} port(s)\n\n", tag)
-        self._status(f"Scan complete — {count} device(s)")
+        self._status(f"Scan complete - {count} device(s)")
         if self.ai_client and devices:
             self._log("⟳ Generating AI explanations...\n", "teal")
             def on_update(ip, port, expl):

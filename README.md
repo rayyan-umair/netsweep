@@ -3,7 +3,7 @@
 **Network Discovery & Security Assessment**
 The first security scanner that teaches you while it scans.
 
-Built by Rayyan Umair — Technology evolves quickly. Responsibility does not.
+Built by Rayyan Umair - Technology evolves quickly. Responsibility does not.
 
 ---
 
@@ -13,10 +13,10 @@ NetSweep finds every device on your network, scans their open ports, detects
 services and versions, checks for known CVEs, and explains every single finding
 in plain English with four layers:
 
-- What is it — plain English description of the service
-- Why it matters — the security implication
-- Real risk — concrete worst-case scenario specific to your finding
-- How to fix it — exact actionable steps, not vague advice
+- What is it - plain English description of the service
+- Why it matters - the security implication
+- Real risk - concrete worst-case scenario specific to your finding
+- How to fix it - exact actionable steps, not vague advice
 
 No Nmap. No command line experience required. No guessing what the output means.
 
@@ -37,14 +37,14 @@ python gui.py
 ```
 
 On first launch, a setup screen will ask for your AI API key.
-This is optional — skip it and the tool still scans and reports findings.
+This is optional - skip it and the tool still scans and reports findings.
 AI just adds the explanations on top.
 
 ### 3. Try Demo Mode first
 
 Click Demo Mode in the toolbar before scanning anything.
-It loads a realistic set of example results — a router, a Windows PC, a Raspberry Pi,
-an IoT device, and an iPhone — all with full explanations pre-loaded.
+It loads a realistic set of example results - a router, a Windows PC, a Raspberry Pi,
+an IoT device, and an iPhone - all with full explanations pre-loaded.
 This is the fastest way to understand what NetSweep shows you and why it matters.
 
 ### 4. Scan your network
@@ -60,8 +60,8 @@ It is stored locally in ~/.netsweep/config.json and never shared or uploaded.
 
 | Provider | Model | Free Tier | Get Key |
 |---|---|---|---|
-| Google (Gemini) | gemini-2.0-flash | Yes — 1500 req/day | aistudio.google.com |
-| Groq (Llama 3) | llama-3.1-8b-instant | Yes — 14400 req/day | console.groq.com |
+| Google (Gemini) | gemini-2.0-flash | Yes - 1500 req/day | aistudio.google.com |
+| Groq (Llama 3) | llama-3.1-8b-instant | Yes - 14400 req/day | console.groq.com |
 | OpenAI (GPT-4o) | gpt-4o | No | platform.openai.com |
 | Anthropic (Claude) | claude-sonnet-4-20250514 | No | console.anthropic.com |
 
@@ -85,7 +85,7 @@ Toggle between modes in the top-right corner of the application.
 ## Files
 
 netsweep/
-├── gui.py           # Main application — run this
+├── gui.py           # Main application - run this
 ├── engine.py        # Scanning logic
 ├── ai.py            # AI explanation layer
 ├── requirements.txt # Dependencies
