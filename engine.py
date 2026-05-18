@@ -3,7 +3,7 @@ NetSweep - Network Discovery & Security Assessment
 engine.py - Scanning Engine
 
 Author  : Rayyan Umair
-Date    : 04 May, 2026
+Date    : 4 May, 2026
 Purpose : Core scanning logic. Handles host discovery, port scanning, banner
           grabbing, service detection, CVE lookup, risk scoring, and device
           profiling. Designed to be imported and driven by gui.py.

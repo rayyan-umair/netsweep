@@ -3,7 +3,7 @@ NetSweep - Network Discovery & Security Assessment
 ai.py - AI Explanation Layer
 
 Author  : Rayyan Umair
-Date    : 04 May, 2026
+Date    : 4 May, 2026
 Purpose : Handles all AI provider integrations (Anthropic, OpenAI, Google, Groq).
           Generates four-layer security explanations for every scan finding.
           Also provides hardcoded fallback explanations when no API key is set.

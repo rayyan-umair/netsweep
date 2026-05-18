@@ -3,7 +3,7 @@ NetSweep - Network Discovery & Security Assessment
 gui.py - Main Application
 
 Author  : Rayyan Umair
-Date    : 04 May, 2026
+Date    : 4 May, 2026
 Purpose : GUI layer for NetSweep. Handles all visual components, scan control,
           demo mode, AI integration, and result rendering.
 Contact : rayyanxumair@gmail.com
